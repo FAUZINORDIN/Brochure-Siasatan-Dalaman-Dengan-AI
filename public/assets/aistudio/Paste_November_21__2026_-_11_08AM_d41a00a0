@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengendalian Siasatan Dalaman dengan A.I.</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        corporate: {
+                            navy: '#0f172a', /* slate-900 */
+                            blue: '#1e293b', /* slate-800 */
+                            gold: '#f59e0b', /* amber-500 */
+                            light: '#f8fafc', /* slate-50 */
+                            gray: '#64748b', /* slate-500 */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(90deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-pattern {
+            background-color: #0f172a;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        /* Hide default arrow on details/summary */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-corporate-light text-slate-800 antialiased selection:bg-corporate-gold selection:text-white pt-12">
+
+    <!-- LANGUAGE SELECTOR TOP BAR -->
+    <div class="fixed top-0 left-0 w-full bg-corporate-navy border-b border-slate-700 z-50 px-4 py-2 flex justify-end items-center shadow-md">
+        <label for="lang-select" class="text-slate-300 text-sm mr-3 font-medium" data-i18n="lang_label">Bahasa / Language:</label>
+        <div class="relative">
+            <select id="lang-select" onchange="changeLanguage(this.value)" class="appearance-none bg-slate-800 text-white text-sm rounded border border-slate-600 pl-3 pr-8 py-1 outline-none focus:border-corporate-gold cursor-pointer transition-colors hover:bg-slate-700">
+                <option value="ms">Bahasa Melayu</option>
+                <option value="en">English</option>
+                <option value="zh">中文 (Mandarin)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-corporate-gold">
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <header class="hero-pattern text-white pt-20 pb-20 px-4 sm:px-6 lg:px-8 border-b-8 border-corporate-gold relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-corporate-blue opacity-50 blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-corporate-gold opacity-10 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-5xl mx-auto relative z-10 text-center">
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-slate-900 font-bold text-sm uppercase tracking-wider shadow-lg shadow-yellow-500/20">
+                    <i class="fa-solid fa-award text-lg"></i> <span data-i18n="badge_hrd">100% HRD Corp Claimable</span>
+                </span>
+                <span class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-slate-800 border border-slate-600 text-white font-bold text-sm uppercase tracking-wider shadow-lg">
+                    <i class="fa-solid fa-microchip text-corporate-gold text-lg"></i> <span data-i18n="badge_ai">AI Assisted Practice</span>
+                </span>
+            <p class="text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto leading-relaxed mb-10" data-i18n="hero_subtitle">
+                Mengendalikan Siasatan Dalaman Secara Adil, Sistematik dan Dibantu oleh AI.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#pendaftaran" class="bg-corporate-gold hover:bg-yellow-500 text-slate-900 font-bold py-3 px-8 rounded-full shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl w-full sm:w-auto flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="btn_register_now">Daftar Sekarang</span>
+                </a>
+                <button onclick="downloadPDF()" class="bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl w-full sm:w-auto flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-corporate-gold"></i> <span data-i18n="btn_download_pdf">Muat Turun Brosur PDF</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        
+        <!-- SECTION 1: RASIONAL KURSUS -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-12 h-12 rounded-lg bg-corporate-navy flex items-center justify-center text-corporate-gold shadow-md">
+                        <i class="fa-solid fa-scale-balanced text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-corporate-navy" data-i18n="rat_title">Rasional Kursus</h2>
+                </div>
+                
+                <div class="prose prose-lg max-w-none text-slate-600 space-y-6">
+                    <p class="text-justify leading-relaxed" data-i18n="rat_p1">
+                        Pengendalian salah laku pekerja memerlukan proses yang sistematik, adil, telus dan berasaskan bukti. Kesilapan dalam penyiasatan awal, merangka pertuduhan, mengurus bukti, mengendalikan saksi atau merekod prosiding boleh menjejaskan kualiti proses disiplin.
+                    </p>
+                    <p class="text-justify leading-relaxed" data-i18n="rat_p2">
+                        Perkembangan <strong class="text-corporate-navy">Artificial Intelligence (AI)</strong> membuka peluang kepada pengamal HR dan Industrial Relations untuk meningkatkan kecekapan kerja seperti menstruktur fakta kes, mengenal pasti jurang maklumat, membantu merangka pertuduhan, menyediakan soalan saksi, menyusun kronologi, menganalisis dokumen dan membantu menyediakan draf laporan.
+                    </p>
+                    <div class="bg-blue-50 border-l-4 border-corporate-gold p-6 rounded-r-lg mt-8">
+                        <p class="text-justify text-corporate-navy font-medium italic m-0" data-i18n="rat_p3">
+                            Namun AI tidak seharusnya menggantikan pertimbangan manusia. Penggunaannya perlu mengambil kira kerahsiaan, ketepatan maklumat, bias dan human verification. Kursus ini menggabungkan prinsip serta amalan Domestic Inquiry dengan penggunaan AI secara bertanggungjawab dari peringkat awal kes sehingga penyediaan dapatan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: OBJEKTIF & HASIL PEMBELAJARAN -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 border-y border-slate-200">
+            <div class="max-w-5xl mx-auto">
+                <div class="bg-corporate-navy rounded-2xl p-8 md:p-10 text-white shadow-xl mb-12 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-4 -translate-y-4">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-corporate-gold mb-4 flex items-center gap-3 relative z-10">
+                        <i class="fa-solid fa-crosshairs"></i> <span data-i18n="obj_title">Objektif Kursus</span>
+                    </h3>
+                    <p class="text-lg leading-relaxed text-slate-200 relative z-10" data-i18n="obj_desc">
+                        Kursus ini bertujuan membolehkan peserta memahami dan mengendalikan Domestic Inquiry secara profesional serta menggunakan AI sebagai alat sokongan untuk meningkatkan kecekapan, struktur analisis dan kualiti dokumentasi <span class="font-bold text-white border-b border-corporate-gold pb-0.5">tanpa menyerahkan keputusan disiplin kepada AI.</span>
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-3xl font-bold text-corporate-navy mb-8 flex items-center gap-3">
+                        <i class="fa-solid fa-graduation-cap text-corporate-gold"></i> <span data-i18n="hasil_title">Hasil Pembelajaran</span>
+                    </h2>
+                    <p class="text-slate-600 mb-6 font-medium" data-i18n="h_subtitle">Pada akhir kursus, peserta dapat:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h1">Menerangkan konsep, tujuan dan prinsip asas Siasatan Dalaman (Domestic Inquiry), termasuk due inquiry, natural justice dan procedural fairness.</p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h2">Mengaplikasikan proses persediaan sebelum Siasatan Dalaman termasuk siasatan awal, pengumpulan fakta dan bukti, surat tunjuk sebab serta penyediaan pertuduhan dengan <strong class="text-corporate-navy">bantuan AI yang sesuai.</strong></p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h3">Membezakan peranan, tanggungjawab dan batas kuasa Pengerusi, Ahli Panel, Pegawai Pendakwa dan Pencatat dalam memastikan prosiding yang adil dan neutral.</p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h4">Melaksanakan prosedur pembukaan Siasatan Dalaman secara sistematik, termasuk pengesahan kehadiran, pembacaan pertuduhan dan merekod pengakuan pekerja.</p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h5">Mengendalikan prosiding Siasatan Dalaman apabila pekerja mengaku bersalah dengan memastikan pengakuan dibuat secara jelas dan sukarela serta faktor mitigasi diberi pertimbangan sewajarnya.</p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md border-l-4 border-l-corporate-navy">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h6">Mengendalikan dan menganalisis prosiding apabila pekerja mengaku tidak bersalah melalui pembentangan kes, examination-in-chief, cross-examination dan re-examination, termasuk <strong class="text-corporate-navy">penggunaan AI untuk membantu membangunkan soalan dan memetakan bukti.</strong></p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h7">Menilai keadaan dan maklumat berkaitan ketidakhadiran pekerja serta melaksanakan prosiding ex-parte mengikut prosedur yang adil dan sistematik.</p>
+                        </div>
+                        <div class="flex items-start gap-4 bg-white p-5 rounded-xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1 hover:shadow-md border-l-4 border-l-corporate-navy">
+                            <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-corporate-gold"><i class="fa-solid fa-check text-sm"></i></div>
+                            <p class="text-slate-700 leading-snug" data-i18n="h8">Menilai bukti dan keterangan yang dikemukakan serta menghasilkan dapatan dan laporan Siasatan Dalaman yang berstruktur dengan <strong class="text-corporate-navy">bantuan AI dan pengesahan manusia.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- NEW SECTION: SIAPA YANG PATUT HADIR -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-corporate-navy mb-4 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-users-viewfinder text-corporate-gold"></i> <span data-i18n="who_title">Siapa Yang Patut Hadir</span>
+                </h2>
+                <p class="text-slate-600 font-medium mb-10" data-i18n="who_subtitle">Kursus ini direka khusus untuk:</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 hover:border-corporate-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-corporate-navy flex items-center justify-center text-corporate-gold flex-shrink-0"><i class="fa-solid fa-user-tie"></i></div>
+                        <span class="font-bold text-slate-800" data-i18n="who_1">Pengurus & Eksekutif Sumber Manusia (HR)</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 hover:border-corporate-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-corporate-navy flex items-center justify-center text-corporate-gold flex-shrink-0"><i class="fa-solid fa-handshake-angle"></i></div>
+                        <span class="font-bold text-slate-800" data-i18n="who_2">Pegawai Perhubungan Perusahaan (IR)</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 hover:border-corporate-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-corporate-navy flex items-center justify-center text-corporate-gold flex-shrink-0"><i class="fa-solid fa-sitemap"></i></div>
+                        <span class="font-bold text-slate-800" data-i18n="who_3">Ketua Jabatan / Pengurus Cawangan</span>
+                    </div>
+                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200 hover:border-corporate-gold transition-colors">
+                        <div class="w-12 h-12 rounded-full bg-corporate-navy flex items-center justify-center text-corporate-gold flex-shrink-0"><i class="fa-solid fa-scale-unbalanced"></i></div>
+                        <span class="font-bold text-slate-800" data-i18n="who_4">Eksekutif Undang-undang & Pentadbiran</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: METODOLOGI -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+            <div class="max-w-5xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-corporate-navy mb-10" data-i18n="met_title">Metodologi Kursus</h2>
+                <div class="flex flex-wrap justify-center gap-4 md:gap-6">
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-chalkboard-user text-corporate-gold text-xl"></i> <span data-i18n="m1">Facilitator Input</span></div>
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-briefcase text-corporate-gold text-xl"></i> <span data-i18n="m2">Case Study</span></div>
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-users-rays text-corporate-gold text-xl"></i> <span data-i18n="m3">Group Discussion</span></div>
+                    <div class="px-6 py-4 bg-corporate-navy text-white rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-robot text-corporate-gold text-xl"></i> <span data-i18n="m4">AI Prompting Exercise</span></div>
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-regular fa-file-lines text-corporate-gold text-xl"></i> <span data-i18n="m5">Document Analysis</span></div>
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-masks-theater text-corporate-gold text-xl"></i> <span data-i18n="m6">Role Play</span></div>
+                    <div class="px-6 py-4 bg-white text-slate-800 rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.05)] border border-slate-100 flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-gavel text-corporate-gold text-xl"></i> <span data-i18n="m7">Mock Domestic Inquiry</span></div>
+                    <div class="px-6 py-4 bg-corporate-navy text-white rounded-xl shadow-[0_4px_14px_0_rgba(0,0,0,0.1)] flex items-center gap-3 font-semibold text-sm md:text-base"><i class="fa-solid fa-microchip text-corporate-gold text-xl"></i> <span data-i18n="m8">AI-Assisted Case Analysis</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: ISI KANDUNGAN KURSUS -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-corporate-navy text-white relative">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-12">
+                    <span class="text-corporate-gold font-bold tracking-wider uppercase text-sm" data-i18n="mod_subtitle">Struktur Program</span>
+                    <h2 class="text-3xl md:text-4xl font-bold mt-2" data-i18n="mod_title">Isi Kandungan Kursus</h2>
+                    <div class="w-24 h-1 bg-corporate-gold mx-auto mt-6 rounded-full"></div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Modul 1 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">01</span> 
+                                <span data-i18n="mod1_title">FUNDAMENTALS OF DOMESTIC INQUIRY</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod1_1">Definisi & Tujuan DI</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod1_2">Misconduct & pengurusan disiplin</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod1_3">Due Inquiry, Natural Justice & Procedural Fairness</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 2 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">02</span> 
+                                <span data-i18n="mod2_title">BEFORE THE DOMESTIC INQUIRY</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod2_1">Aduan, fakta & bukti</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod2_2">Surat Tunjuk Sebab</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod2_3">Merangka Pertuduhan</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod2_4">AI-Assisted Case Preparation</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 3 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">03</span> 
+                                <span data-i18n="mod3_title">THE DOMESTIC INQUIRY TEAM</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod3_1">Peranan Pengerusi & Ahli Panel</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod3_2">Pegawai Pendakwa & Pencatat</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod3_3">AI Governance dalam DI (Rules, Data & Accountability)</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 4 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">04</span> 
+                                <span data-i18n="mod4_title">OPENING THE DOMESTIC INQUIRY</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod4_1">Persediaan & Ucapan Pembukaan</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod4_2">Pengesahan identiti & pertuduhan</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod4_3">Recording the Plea</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod4_4">AI-Assisted DI Preparation (Checklist, Chronology)</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 5 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">05</span> 
+                                <span data-i18n="mod5_title">PEKERJA MENGAKU BERSALAH</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod5_1">Memastikan pemahaman pertuduhan</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod5_2">Pengakuan jelas & sukarela</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod5_3">Mitigating factors</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod5_4">AI-Assisted Documentation (Draf ringkasan)</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 6 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">06</span> 
+                                <span data-i18n="mod6_title">PEKERJA MENGAKU TIDAK BERSALAH</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod6_1">Presenting the Company's Case</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod6_2">Examination-in-Chief & Cross-Examination</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod6_3">Re-Examination</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod6_4">AI Question Development & Evidence Mapping</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 7 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">07</span> 
+                                <span data-i18n="mod7_title">EX-PARTE DOMESTIC INQUIRY</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod7_1">Maksud Ex-Parte DI</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod7_2">Notis & bukti penyampaian</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod7_3">Menilai sebab ketidakhadiran</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod7_4">AI-Assisted Ex-Parte Checklist & Gap Analysis</span></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <!-- Modul 8 -->
+                    <details class="group bg-corporate-blue rounded-xl border border-slate-700 open:border-corporate-gold transition-all duration-300 shadow-lg relative overflow-hidden">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-6 text-lg md:text-xl select-none relative z-10">
+                            <span class="flex items-center gap-4">
+                                <span class="text-corporate-gold text-3xl opacity-70 group-open:opacity-100 transition-opacity">08</span> 
+                                <span data-i18n="mod8_title">FINDINGS, REPORT & AI-ASSISTED REVIEW</span>
+                            </span>
+                            <span class="transition-transform duration-300 group-open:-rotate-180">
+                                <i class="fa-solid fa-chevron-down text-corporate-gold"></i>
+                            </span>
+                        </summary>
+                        <div class="absolute -bottom-6 -right-6 text-slate-700 opacity-20 text-9xl pointer-events-none"><i class="fa-solid fa-flag-checkered"></i></div>
+                        <div class="text-slate-300 px-6 pb-6 pt-0 ml-12 text-base relative z-10">
+                            <ul class="space-y-3">
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod8_1">Menilai bukti & kredibiliti</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod8_2">Charge, Elements & Evidence Matrix</span></li>
+                                <li class="flex items-start gap-3"><i class="fa-solid fa-check text-xs mt-1 text-corporate-gold"></i> <span data-i18n="mod8_3">Menyediakan DI Report</span></li>
+                                <li class="flex items-start gap-3 text-white font-medium bg-slate-700/50 p-2 rounded-lg inline-block"><i class="fa-solid fa-robot text-sm text-corporate-gold mr-2"></i> <span data-i18n="mod8_4">AI-Assisted Review + Human Verification</span></li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: BIODATA -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex items-center justify-center gap-4 mb-10">
+                    <h2 class="text-3xl font-bold text-corporate-navy text-center uppercase tracking-wide" data-i18n="bio_title">Biodata Tenaga Pengajar</h2>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
+                    <div class="md:w-1/3 bg-corporate-navy p-8 text-center text-white flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8L3N2Zz4=')]"></div>
+                        <div class="w-40 h-40 rounded-full bg-slate-700 border-4 border-corporate-gold mb-6 overflow-hidden relative z-10 shadow-lg">
+                            <img src="https://i.imgur.com/eGRO5az.jpg" alt="Mohd Fauzi Nordin" class="w-full h-full object-cover">
+                        </div>
+                        <h3 class="text-2xl font-bold text-corporate-gold mb-2 relative z-10">MOHD FAUZI NORDIN</h3>
+                        <div class="w-16 h-1 bg-white/20 mx-auto mb-6 rounded-full relative z-10"></div>
+                        <ul class="text-sm space-y-3 text-slate-300 font-medium relative z-10 text-left w-full px-4">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-brain mt-1 text-corporate-gold"></i> <span data-i18n="bio_c1">Neuro Synergy NLP Master Trainer (GAANS, NZ)</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-graduation-cap mt-1 text-corporate-gold"></i> <span data-i18n="bio_c2">Neuro-Semantics & NLP Trainer (ISNS, USA)</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-bullseye mt-1 text-corporate-gold"></i> <span data-i18n="bio_c3">Strategic & Performance Coach</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-user-tie mt-1 text-corporate-gold"></i> <span data-i18n="bio_c4">HR Consultant | Learning Technologist</span></li>
+                        </ul>
+                        <div class="mt-8 inline-flex items-center gap-2 bg-white/10 px-5 py-2 rounded-full text-xs font-semibold relative z-10 border border-white/20">
+                            <i class="fa-solid fa-certificate text-corporate-gold"></i> <span data-i18n="bio_badge">HRD Corp Accredited Trainer</span>
+                        </div>
+                    </div>
+                    
+                    <div class="md:w-2/3 p-8 md:p-10 space-y-5 text-slate-600 text-sm md:text-base text-justify leading-relaxed">
+                        <p data-i18n="bio_p1">Memulakan kerjaya di dalam Kementerian Dalam Negeri Malaysia dan seterusnya di Lembaga Lebuhraya Malaysia. Setelah 3 tahun di dalam perkhidmatan Kerajaan Malaysia, beliau memasuki Projek Lebuhraya Utara-Selatan Berhad (PLUS) iaitu sebuah syarikat pengendali lebuhraya yang terbesar di Malaysia. Berpengalaman bertugas sebagai Eksekutif Operasi di salah sebuah Lebuhraya yang tersibuk di Malaysia yang mempunyai lebih 200 pekerja dan 30 Penyelia di dalam operasi 24 jam sehari selama hampir 6 tahun.</p>
+                        <p data-i18n="bio_p2">Lima tahun yang terakhir beliau bertugas di Jabatan Sumber Manusia sebagai Ketua Unit yang mengendalikan pelbagai fungsi seperti Latihan untuk pekerja, disiplin, kebajikan pekerja, Keselamatan dan kesihatan pekerja serta terlibat secara langsung dalam membangunkan organisasi di dalam pelbagai aspek dan program. Beliau juga pernah memegang jawatan sebagai Pengurus Kumpulan Pentadbiran dan Sumber Manusia di Grand Saga Sdn Bhd.</p>
+                        <p data-i18n="bio_p3">Kini beliau telah lebih 26 tahun mengendalikan latihan dan perundingan untuk pelbagai Industri di Malaysia di dalam bidang Latihan, Pengurusan Sumber Manusia, Kepimpinan, Motivasi, Perkhidmatan Pelanggan, Keusahawanan, Persaraan dan Pentadbiran Pejabat.</p>
+                        <p data-i18n="bio_p4">Di dalam bidang Neuro-Semantics dan NLP (Neuro Linguistic Programming), Mohd Fauzi Nordin merupakan seorang Certified Neuro-Semantics & NLP Trainer (ISNS, USA), Certified NLP Trainer (NFNLP, USA), Certified NLP Master Practitioner (NFNLP-USA), Certified NLP Basic Practitioner (NFNLP-USA), Certified Basic Neuro-Semantics (ISNS – USA), Certified Meta Master Practitioner (ISNS, USA).</p>
+                        <p data-i18n="bio_p5">Sementara di dalam Coaching, Mohd Fauzi Nordin adalah seorang Associate Certified Meta-Coach (ACMC) dari ISNS, USA, Certified Performance Coach (OUM / International Coach Federation), Certified NLP Coach from Coaching Division of the American Board of NLP, USA, Certified Neurolinguistic Coach (NFLP,USA) dan Certified Sports and Performance Coach (NFNLP, USA).</p>
+                        <p data-i18n="bio_p6">Di dalam bidang bahasa, Mohd Fauzi Nordin adalah seorang Certified Language and Behavioral Profile (LAB) Practitioner (SS,CAN), Certified Neurolinguistic Communication Consultant (NFNLP,USA) dan Certified Neurolinguistic Hypnotherapy (NFNLP, USA).</p>
+                        <p data-i18n="bio_p7">Sementara di dalam bidang latihan, beliau adalah seorang trainer (Certification in Training) yang disahkan oleh Pembangunan Sumber Manusia Berhad (PSMB). Certification in Training Evaluation (CITE) dari Pembangunan Sumber Manusia Berhad (EET/0145) dan Certificate IV in Training and Assessment, Australia.</p>
+                        <p class="font-semibold text-corporate-navy pt-2 border-t border-slate-100" data-i18n="bio_p8">Mohd Fauzi Nordin berkelulusan Master in Business Administration (MBA), Bachelor In Business Administration (BBA), Diploma in Personnel Management dan Diploma in Public Administration.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: MAKLUMAT PROGRAM -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-corporate-navy text-white border-t border-slate-800">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4" data-i18n="info_title">Maklumat Program</h2>
+                    <div class="w-24 h-1 bg-corporate-gold mx-auto rounded-full"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Date & Time -->
+                    <div class="bg-corporate-blue rounded-xl p-8 border border-slate-700 text-center hover:border-corporate-gold transition-colors shadow-lg relative overflow-hidden group">
+                        <div class="absolute -top-4 -right-4 opacity-10 text-7xl group-hover:scale-110 transition-transform"><i class="fa-regular fa-calendar-days"></i></div>
+                        <div class="w-16 h-16 rounded-full bg-slate-800 border border-corporate-gold flex items-center justify-center text-corporate-gold text-2xl mx-auto mb-6 relative z-10">
+                            <i class="fa-regular fa-calendar-days"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-i18n="info_date_title">Tarikh & Masa</h3>
+                        <p class="text-corporate-gold font-bold text-xl mb-1" data-i18n="info_date_val">28 & 29 Disember</p>
+                        <p class="text-slate-300 font-medium">9.00 am - 5.30 pm</p>
+                    </div>
+
+                    <!-- Venue -->
+                    <div class="bg-corporate-blue rounded-xl p-8 border border-slate-700 text-center hover:border-corporate-gold transition-colors shadow-lg relative overflow-hidden group">
+                        <div class="absolute -top-4 -right-4 opacity-10 text-7xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="w-16 h-16 rounded-full bg-slate-800 border border-corporate-gold flex items-center justify-center text-corporate-gold text-2xl mx-auto mb-6 relative z-10">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-i18n="info_venue_title">Tempat</h3>
+                        <p class="text-corporate-gold font-bold text-lg mb-1" data-i18n="info_venue_val">Tanjong Vista Hotel</p>
+                        <p class="text-slate-300 font-medium">Kuala Terengganu</p>
+                    </div>
+
+                    <!-- Fee -->
+                    <div class="bg-corporate-blue rounded-xl p-8 border border-slate-700 text-center hover:border-corporate-gold transition-colors shadow-lg relative overflow-hidden group">
+                        <div class="absolute -top-4 -right-4 opacity-10 text-7xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-tags"></i></div>
+                        <div class="w-16 h-16 rounded-full bg-slate-800 border border-corporate-gold flex items-center justify-center text-corporate-gold text-2xl mx-auto mb-6 relative z-10">
+                            <i class="fa-solid fa-tags"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3" data-i18n="info_fee_title">Bayaran Kursus</h3>
+                        <p class="text-corporate-gold font-bold text-2xl mb-2">RM 1,550.00 <span class="text-sm text-slate-300 font-normal" data-i18n="info_fee_pax">/ seorang</span></p>
+                        <p class="text-slate-400 text-sm leading-relaxed" data-i18n="info_fee_inc">Termasuk minum pagi, makan tengahari dan minum petang, sijil kehadiran dan nota-nota kursus.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: BORANG PENDAFTARAN -->
+        <section id="pendaftaran" class="py-16 px-4 sm:px-6 lg:px-8 bg-white border-t border-slate-200">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl font-bold text-corporate-navy mb-4" data-i18n="form_title">Borang Pendaftaran Kursus</h2>
+                    <p class="text-slate-500 font-medium" data-i18n="form_subtitle">Pengendalian Siasatan Dalaman (Domestic Inquiry) Dengan A.I</p>
+                </div>
+
+                <form id="registrationForm" onsubmit="handleRegistration(event)" class="bg-corporate-light p-8 rounded-2xl shadow-lg border border-slate-200 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-corporate-gold opacity-5 rounded-bl-full pointer-events-none"></div>
+
+                    <div class="mb-10 relative z-10">
+                        <h3 class="text-xl font-bold text-corporate-navy border-b-2 border-corporate-gold pb-2 mb-6 flex items-center gap-2">
+                            <i class="fa-solid fa-building text-corporate-gold"></i> <span data-i18n="form_sec1">Pendaftaran Dibuat Oleh</span>
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_name">Nama Penuh</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="regName" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_pos">Jawatan</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="regPos" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_company">Nama Syarikat</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="regCompany" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_phone">No. Telefon / HP</span> <span class="text-red-500">*</span></label>
+                                <input type="tel" id="regPhone" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_email">Alamat E-mel</span> <span class="text-red-500">*</span></label>
+                                <input type="email" id="regEmail" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_address">Alamat Syarikat</span> <span class="text-red-500">*</span></label>
+                                <textarea rows="3" id="regAddress" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 relative z-10">
+                        <div class="flex items-center justify-between border-b-2 border-corporate-gold pb-2 mb-6">
+                            <h3 class="text-xl font-bold text-corporate-navy flex items-center gap-2">
+                                <i class="fa-solid fa-users text-corporate-gold"></i> <span data-i18n="form_sec2">Maklumat Peserta</span>
+                            </h3>
+                            <span class="text-xs font-bold text-corporate-navy bg-corporate-gold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm" data-i18n="form_p1">Peserta 1</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_name">Nama Penuh</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="p1Name" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_ic">No. MyKad</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="p1Ic" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_pos_phone">Jawatan / No. Telefon</span> <span class="text-red-500">*</span></label>
+                                <input type="text" id="p1PosPhone" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-2"><span data-i18n="lbl_email">Alamat E-mel</span> <span class="text-red-500">*</span></label>
+                                <input type="email" id="p1Email" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-corporate-gold focus:border-corporate-gold outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 text-corporate-navy text-sm p-4 rounded-lg flex items-start gap-3 mb-8 border border-blue-100">
+                        <i class="fa-solid fa-circle-info mt-0.5 text-corporate-gold text-lg"></i>
+                        <p class="leading-relaxed" data-i18n="form_note">Sila buat pendua borang ini jika peserta melebihi 3 orang atau e-mel maklumat yang sama kepada <strong class="text-corporate-navy font-bold">fauzinordin@hrconsultant.my</strong>. Pengesahan pendaftaran akan dihantar melalui e-mel kepada wakil syarikat.</p>
+                    </div>
+
+                    <div class="text-center relative z-10">
+                        <button type="submit" class="bg-corporate-gold hover:bg-yellow-500 text-slate-900 font-bold text-lg py-3 px-10 rounded-full shadow-lg transition-transform hover:-translate-y-1 hover:shadow-xl w-full sm:w-auto">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> <span data-i18n="btn_submit">Hantar Pendaftaran</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 8: HUBUNGI KAMI -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 text-white border-t border-slate-800">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-corporate-gold mb-8 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-address-card"></i> <span data-i18n="contact_title">Hubungi Kami</span>
+                </h2>
+                <div class="bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-700 inline-block text-left max-w-2xl w-full">
+                    <h3 class="text-2xl font-bold mb-4 text-white">STRATEGIC HRM SOLUTIONS</h3>
+                    <div class="space-y-4 text-slate-300">
+                        <p class="flex items-start gap-4">
+                            <i class="fa-solid fa-location-dot mt-1 text-corporate-gold w-5 text-center"></i>
+                            <span class="leading-relaxed">22M, Jalan Kosas 1/5, Taman Kosas<br>68000 Ampang, Selangor</span>
+                        </p>
+                        <p class="flex items-center gap-4">
+                            <i class="fa-solid fa-phone text-corporate-gold w-5 text-center"></i>
+                            <span>Tel: 019-397 0002 / 03-4280 0398</span>
+                        </p>
+                        <p class="flex items-center gap-4">
+                            <i class="fa-solid fa-envelope text-corporate-gold w-5 text-center"></i>
+                            <span><span data-i18n="contact_email_lbl">Email: </span> <a href="mailto:fauzinordin@hrconsultant.my" class="text-corporate-gold hover:text-white transition-colors">fauzinordin@hrconsultant.my</a></span>
+                        </p>
+                        <p class="flex items-center gap-4">
+                            <i class="fa-solid fa-globe text-corporate-gold w-5 text-center"></i>
+                            <span><span data-i18n="contact_web_lbl">Website: </span> <a href="http://www.hrconsultant.my" target="_blank" class="text-corporate-gold hover:text-white transition-colors">www.hrconsultant.my</a></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 py-8 px-4 text-center border-t border-slate-800">
+        <p class="text-slate-500 text-sm" data-i18n="footer">
+            &copy; 2026 Program Latihan Profesional. Sesuai untuk tuntutan <strong class="text-slate-300">HRD Corp</strong>. <br class="md:hidden"/> Hak cipta terpelihara.
+        </p>
+    </footer>
+
+    <!-- Custom Modal for PDF Alert -->
+    <div id="customModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0 text-center" id="customModalContent">
+            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4 text-green-500 text-3xl shadow-inner">
+                <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <h3 class="text-xl font-bold text-corporate-navy mb-2" id="modalTitle">Berjaya / Success</h3>
+            <p class="text-slate-600 mb-8 font-medium" id="modalMessage">Mesej akan dipaparkan di sini</p>
+            <button onclick="closeModal()" class="bg-corporate-navy hover:bg-slate-800 text-white font-bold py-2.5 px-8 rounded-full w-full transition-colors shadow-md">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- i18n JavaScript -->
+    <script>
+        const translations = {
+            ms: {
+                lang_label: "Bahasa / Language:",
+                btn_register_now: "Daftar Sekarang",
+                btn_download_pdf: "Muat Turun Brosur PDF",
+                msg_pdf_downloaded: "Brosur PDF dilampirkan.",
+                badge_hrd: "100% HRD Corp Claimable",
+                badge_ai: "AI Assisted Practice",
+                badge_mod: "8 Modul Lengkap",
+                hero_title: "PENGENDALIAN SIASATAN DALAMAN <br class='hidden md:block'/>(DOMESTIC INQUIRY) DENGAN A.I",
+                hero_subtitle: "Mengendalikan Siasatan Dalaman Secara Adil, Sistematik dan Dibantu oleh AI.",
+                rat_title: "Rasional Kursus",
+                rat_p1: "Pengendalian salah laku pekerja memerlukan proses yang sistematik, adil, telus dan berasaskan bukti. Kesilapan dalam penyiasatan awal, merangka pertuduhan, mengurus bukti, mengendalikan saksi atau merekod prosiding boleh menjejaskan kualiti proses disiplin.",
+                rat_p2: "Perkembangan <strong class='text-corporate-navy'>Artificial Intelligence (AI)</strong> membuka peluang kepada pengamal HR dan Industrial Relations untuk meningkatkan kecekapan kerja seperti menstruktur fakta kes, mengenal pasti jurang maklumat, membantu merangka pertuduhan, menyediakan soalan saksi, menyusun kronologi, menganalisis dokumen dan membantu menyediakan draf laporan.",
+                rat_p3: "Namun AI tidak seharusnya menggantikan pertimbangan manusia. Penggunaannya perlu mengambil kira kerahsiaan, ketepatan maklumat, bias dan human verification. Kursus ini menggabungkan prinsip serta amalan Domestic Inquiry dengan penggunaan AI secara bertanggungjawab dari peringkat awal kes sehingga penyediaan dapatan.",
+                obj_title: "Objektif Kursus",
+                obj_desc: "Kursus ini bertujuan membolehkan peserta memahami dan mengendalikan Domestic Inquiry secara profesional serta menggunakan AI sebagai alat sokongan untuk meningkatkan kecekapan, struktur analisis dan kualiti dokumentasi <span class='font-bold text-white border-b border-corporate-gold pb-0.5'>tanpa menyerahkan keputusan disiplin kepada AI.</span>",
+                hasil_title: "Hasil Pembelajaran",
+                h_subtitle: "Pada akhir kursus, peserta dapat:",
+                h1: "Menerangkan konsep, tujuan dan prinsip asas Siasatan Dalaman (Domestic Inquiry), termasuk due inquiry, natural justice dan procedural fairness.",
+                h2: "Mengaplikasikan proses persediaan sebelum Siasatan Dalaman termasuk siasatan awal, pengumpulan fakta dan bukti, surat tunjuk sebab serta penyediaan pertuduhan dengan <strong class='text-corporate-navy'>bantuan AI yang sesuai.</strong>",
+                h3: "Membezakan peranan, tanggungjawab dan batas kuasa Pengerusi, Ahli Panel, Pegawai Pendakwa dan Pencatat dalam memastikan prosiding yang adil dan neutral.",
+                h4: "Melaksanakan prosedur pembukaan Siasatan Dalaman secara sistematik, termasuk pengesahan kehadiran, pembacaan pertuduhan dan merekod pengakuan pekerja.",
+                h5: "Mengendalikan prosiding Siasatan Dalaman apabila pekerja mengaku bersalah dengan memastikan pengakuan dibuat secara jelas dan sukarela serta faktor mitigasi diberi pertimbangan sewajarnya.",
+                h6: "Mengendalikan dan menganalisis prosiding apabila pekerja mengaku tidak bersalah melalui pembentangan kes, examination-in-chief, cross-examination dan re-examination, termasuk <strong class='text-corporate-navy'>penggunaan AI untuk membantu membangunkan soalan dan memetakan bukti.</strong>",
+                h7: "Menilai keadaan dan maklumat berkaitan ketidakhadiran pekerja serta melaksanakan prosiding ex-parte mengikut prosedur yang adil dan sistematik.",
+                h8: "Menilai bukti dan keterangan yang dikemukakan serta menghasilkan dapatan dan laporan Siasatan Dalaman yang berstruktur dengan <strong class='text-corporate-navy'>bantuan AI dan pengesahan manusia.</strong>",
+                who_title: "Siapa Yang Patut Hadir",
+                who_subtitle: "Kursus ini direka khusus untuk:",
+                who_1: "Pengurus & Eksekutif Sumber Manusia (HR)",
+                who_2: "Pegawai Perhubungan Perusahaan (IR)",
+                who_3: "Ketua Jabatan / Pengurus Cawangan",
+                who_4: "Eksekutif Undang-undang & Pentadbiran",
+                met_title: "Metodologi Kursus",
+                m1: "Facilitator Input", m2: "Case Study", m3: "Group Discussion", m4: "AI Prompting Exercise", m5: "Document Analysis", m6: "Role Play", m7: "Mock Domestic Inquiry", m8: "AI-Assisted Case Analysis",
+                mod_subtitle: "Struktur Program",
+                mod_title: "Isi Kandungan Kursus",
+                mod1_title: "FUNDAMENTALS OF DOMESTIC INQUIRY", mod1_1: "Definisi & Tujuan DI", mod1_2: "Misconduct & pengurusan disiplin", mod1_3: "Due Inquiry, Natural Justice & Procedural Fairness",
+                mod2_title: "BEFORE THE DOMESTIC INQUIRY", mod2_1: "Aduan, fakta & bukti", mod2_2: "Surat Tunjuk Sebab", mod2_3: "Merangka Pertuduhan", mod2_4: "AI-Assisted Case Preparation",
+                mod3_title: "THE DOMESTIC INQUIRY TEAM", mod3_1: "Peranan Pengerusi & Ahli Panel", mod3_2: "Pegawai Pendakwa & Pencatat", mod3_3: "AI Governance dalam DI (Rules, Data & Accountability)",
+                mod4_title: "OPENING THE DOMESTIC INQUIRY", mod4_1: "Persediaan & Ucapan Pembukaan", mod4_2: "Pengesahan identiti & pertuduhan", mod4_3: "Recording the Plea", mod4_4: "AI-Assisted DI Preparation (Checklist, Chronology)",
+                mod5_title: "PEKERJA MENGAKU BERSALAH", mod5_1: "Memastikan pemahaman pertuduhan", mod5_2: "Pengakuan jelas & sukarela", mod5_3: "Mitigating factors", mod5_4: "AI-Assisted Documentation (Draf ringkasan)",
+                mod6_title: "PEKERJA MENGAKU TIDAK BERSALAH", mod6_1: "Presenting the Company's Case", mod6_2: "Examination-in-Chief & Cross-Examination", mod6_3: "Re-Examination", mod6_4: "AI Question Development & Evidence Mapping",
+                mod7_title: "EX-PARTE DOMESTIC INQUIRY", mod7_1: "Maksud Ex-Parte DI", mod7_2: "Notis & bukti penyampaian", mod7_3: "Menilai sebab ketidakhadiran", mod7_4: "AI-Assisted Ex-Parte Checklist & Gap Analysis",
+                mod8_title: "FINDINGS, REPORT & AI-ASSISTED REVIEW", mod8_1: "Menilai bukti & kredibiliti", mod8_2: "Charge, Elements & Evidence Matrix", mod8_3: "Menyediakan DI Report", mod8_4: "AI-Assisted Review + Human Verification",
+                bio_title: "Biodata Tenaga Pengajar",
+                bio_c1: "Neuro Synergy NLP Master Trainer (GAANS, NZ)", bio_c2: "Neuro-Semantics & NLP Trainer (ISNS, USA)", bio_c3: "Strategic & Performance Coach", bio_c4: "HR Consultant | Learning Technologist", bio_badge: "HRD Corp Accredited Trainer",
+                bio_p1: "Memulakan kerjaya di dalam Kementerian Dalam Negeri Malaysia dan seterusnya di Lembaga Lebuhraya Malaysia. Setelah 3 tahun di dalam perkhidmatan Kerajaan Malaysia, beliau memasuki Projek Lebuhraya Utara-Selatan Berhad (PLUS) iaitu sebuah syarikat pengendali lebuhraya yang terbesar di Malaysia. Berpengalaman bertugas sebagai Eksekutif Operasi di salah sebuah Lebuhraya yang tersibuk di Malaysia yang mempunyai lebih 200 pekerja dan 30 Penyelia di dalam operasi 24 jam sehari selama hampir 6 tahun.",
+                bio_p2: "Lima tahun yang terakhir beliau bertugas di Jabatan Sumber Manusia sebagai Ketua Unit yang mengendalikan pelbagai fungsi seperti Latihan untuk pekerja, disiplin, kebajikan pekerja, Keselamatan dan kesihatan pekerja serta terlibat secara langsung dalam membangunkan organisasi di dalam pelbagai aspek dan program. Beliau juga pernah memegang jawatan sebagai Pengurus Kumpulan Pentadbiran dan Sumber Manusia di Grand Saga Sdn Bhd.",
+                bio_p3: "Kini beliau telah lebih 26 tahun mengendalikan latihan dan perundingan untuk pelbagai Industri di Malaysia di dalam bidang Latihan, Pengurusan Sumber Manusia, Kepimpinan, Motivasi, Perkhidmatan Pelanggan, Keusahawanan, Persaraan dan Pentadbiran Pejabat.",
+                bio_p4: "Di dalam bidang Neuro-Semantics dan NLP (Neuro Linguistic Programming), Mohd Fauzi Nordin merupakan seorang Certified Neuro-Semantics & NLP Trainer (ISNS, USA), Certified NLP Trainer (NFNLP, USA), Certified NLP Master Practitioner (NFNLP-USA), Certified NLP Basic Practitioner (NFNLP-USA), Certified Basic Neuro-Semantics (ISNS – USA), Certified Meta Master Practitioner (ISNS, USA).",
+                bio_p5: "Sementara di dalam Coaching, Mohd Fauzi Nordin adalah seorang Associate Certified Meta-Coach (ACMC) dari ISNS, USA, Certified Performance Coach (OUM / International Coach Federation), Certified NLP Coach from Coaching Division of the American Board of NLP, USA, Certified Neurolinguistic Coach (NFLP,USA) dan Certified Sports and Performance Coach (NFNLP, USA).",
+                bio_p6: "Di dalam bidang bahasa, Mohd Fauzi Nordin adalah seorang Certified Language and Behavioral Profile (LAB) Practitioner (SS,CAN), Certified Neurolinguistic Communication Consultant (NFNLP,USA) dan Certified Neurolinguistic Hypnotherapy (NFNLP, USA).",
+                bio_p7: "Sementara di dalam bidang latihan, beliau adalah seorang trainer (Certification in Training) yang disahkan oleh Pembangunan Sumber Manusia Berhad (PSMB). Certification in Training Evaluation (CITE) dari Pembangunan Sumber Manusia Berhad (EET/0145) dan Certificate IV in Training and Assessment, Australia.",
+                bio_p8: "Mohd Fauzi Nordin berkelulusan Master in Business Administration (MBA), Bachelor In Business Administration (BBA), Diploma in Personnel Management dan Diploma in Public Administration.",
+                info_title: "Maklumat Program", info_date_title: "Tarikh & Masa", info_date_val: "28 & 29 Disember", info_venue_title: "Tempat", info_venue_val: "Tanjong Vista Hotel", info_fee_title: "Bayaran Kursus", info_fee_pax: "/ seorang", info_fee_inc: "(Termasuk minum pagi, makan tengahari dan minum petang, sijil kehadiran dan nota-nota kursus)",
+                form_title: "Borang Pendaftaran Kursus", form_subtitle: "Pengendalian Siasatan Dalaman (Domestic Inquiry) Dengan A.I",
+                form_sec1: "Pendaftaran Dibuat Oleh", lbl_name: "Nama Penuh", lbl_pos: "Jawatan", lbl_company: "Nama Syarikat", lbl_phone: "No. Telefon / HP", lbl_email: "Alamat E-mel", lbl_address: "Alamat Syarikat",
+                form_sec2: "Maklumat Peserta", form_p1: "Peserta 1", lbl_ic: "No. MyKad", lbl_pos_phone: "Jawatan / No. Telefon",
+                form_note: "Sila buat pendua borang ini jika peserta melebihi 3 orang atau e-mel maklumat yang sama kepada <strong class='text-corporate-navy font-bold'>fauzinordin@hrconsultant.my</strong>. Pengesahan pendaftaran akan dihantar melalui e-mel kepada wakil syarikat.",
+                btn_submit: "Hantar Pendaftaran",
+                footer: "&copy; 2026 Program Latihan Profesional. Sesuai untuk tuntutan <strong class='text-slate-300'>HRD Corp</strong>. <br class='md:hidden'/> Hak cipta terpelihara.",
+                contact_title: "Hubungi Kami", contact_email_lbl: "E-mel: ", contact_web_lbl: "Laman Web: "
+            },
+            en: {
+                lang_label: "Language:",
+                btn_register_now: "Register Now",
+                btn_download_pdf: "Download PDF Brochure",
+                msg_pdf_downloaded: "PDF Brochure attached.",
+                badge_hrd: "100% HRD Corp Claimable", badge_ai: "AI Assisted Practice", badge_mod: "8 Complete Modules",
+                hero_title: "CONDUCTING DOMESTIC INQUIRY <br class='hidden md:block'/>WITH A.I",
+                hero_subtitle: "Managing Domestic Inquiry Fairly, Systematically and Assisted by AI.",
+                rat_title: "Course Rationale",
+                rat_p1: "Handling employee misconduct requires a systematic, fair, transparent, and evidence-based process. Errors in preliminary investigations, framing charges, managing evidence, handling witnesses, or recording proceedings can compromise the quality of the disciplinary process.",
+                rat_p2: "The development of <strong class='text-corporate-navy'>Artificial Intelligence (AI)</strong> opens opportunities for HR and Industrial Relations practitioners to improve work efficiency such as structuring case facts, identifying information gaps, helping to draft charges, preparing witness questions, arranging chronologies, analyzing documents, and preparing draft reports.",
+                rat_p3: "However, AI should not replace human judgment. Its use needs to consider confidentiality, information accuracy, bias, and human verification. This course combines the principles and practices of Domestic Inquiry with the responsible use of AI from early case stages to the preparation of findings.",
+                obj_title: "Course Objectives",
+                obj_desc: "This course aims to enable participants to understand and conduct Domestic Inquiries professionally and use AI as a support tool to improve efficiency, analytical structure, and documentation quality <span class='font-bold text-white border-b border-corporate-gold pb-0.5'>without handing over disciplinary decisions to AI.</span>",
+                hasil_title: "Learning Outcomes", h_subtitle: "By the end of this course, participants will be able to:",
+                h1: "Explain the concepts, purpose, and basic principles of Domestic Inquiry, including due inquiry, natural justice, and procedural fairness.",
+                h2: "Apply preparation processes before a Domestic Inquiry including preliminary investigation, fact and evidence gathering, show cause letters, and charge preparation with <strong class='text-corporate-navy'>appropriate AI assistance.</strong>",
+                h3: "Distinguish the roles, responsibilities, and limits of authority of the Chairman, Panel Members, Presenting Officer, and Recording Officer in ensuring fair and neutral proceedings.",
+                h4: "Execute the opening procedure of a Domestic Inquiry systematically, including attendance verification, charge reading, and recording the employee's plea.",
+                h5: "Handle Domestic Inquiry proceedings when an employee pleads guilty by ensuring the plea is clear and voluntary, and mitigating factors are given due consideration.",
+                h6: "Conduct and analyze proceedings when an employee pleads not guilty through presentation of the case, examination-in-chief, cross-examination, and re-examination, including the <strong class='text-corporate-navy'>use of AI to assist in developing questions and mapping evidence.</strong>",
+                h7: "Assess circumstances and information related to employee absence and conduct ex-parte proceedings according to fair and systematic procedures.",
+                h8: "Evaluate evidence and testimony presented and produce structured Domestic Inquiry findings and reports with <strong class='text-corporate-navy'>AI assistance and human verification.</strong>",
+                who_title: "Who Should Attend",
+                who_subtitle: "This course is specially designed for:",
+                who_1: "HR Managers & Executives",
+                who_2: "Industrial Relations (IR) Officers",
+                who_3: "Heads of Department / Branch Managers",
+                who_4: "Legal & Admin Executives",
+                met_title: "Course Methodology",
+                m1: "Facilitator Input", m2: "Case Study", m3: "Group Discussion", m4: "AI Prompting Exercise", m5: "Document Analysis", m6: "Role Play", m7: "Mock Domestic Inquiry", m8: "AI-Assisted Case Analysis",
+                mod_subtitle: "Program Structure", mod_title: "Course Contents",
+                mod1_title: "FUNDAMENTALS OF DOMESTIC INQUIRY", mod1_1: "Definition & Purpose of DI", mod1_2: "Misconduct & discipline management", mod1_3: "Due Inquiry, Natural Justice & Procedural Fairness",
+                mod2_title: "BEFORE THE DOMESTIC INQUIRY", mod2_1: "Complaints, facts & evidence", mod2_2: "Show Cause Letter", mod2_3: "Drafting the Charge", mod2_4: "AI-Assisted Case Preparation",
+                mod3_title: "THE DOMESTIC INQUIRY TEAM", mod3_1: "Role of Chairman & Panel", mod3_2: "Presenting & Recording Officer", mod3_3: "AI Governance in DI (Rules, Data & Accountability)",
+                mod4_title: "OPENING THE DOMESTIC INQUIRY", mod4_1: "Room & Document Prep", mod4_2: "Identity & Charge Verification", mod4_3: "Recording the Plea", mod4_4: "AI-Assisted DI Preparation (Checklist, Chronology)",
+                mod5_title: "EMPLOYEE PLEADS GUILTY", mod5_1: "Ensuring charge comprehension", mod5_2: "Clear & voluntary plea", mod5_3: "Mitigating factors", mod5_4: "AI-Assisted Documentation (Draft summary)",
+                mod6_title: "EMPLOYEE PLEADS NOT GUILTY", mod6_1: "Presenting the Company's Case", mod6_2: "Examination-in-Chief & Cross-Examination", mod6_3: "Re-Examination", mod6_4: "AI Question Development & Evidence Mapping",
+                mod7_title: "EX-PARTE DOMESTIC INQUIRY", mod7_1: "Meaning of Ex-Parte DI", mod7_2: "Notice & proof of delivery", mod7_3: "Assessing reasons for absence", mod7_4: "AI-Assisted Ex-Parte Checklist & Gap Analysis",
+                mod8_title: "FINDINGS, REPORT & AI-ASSISTED REVIEW", mod8_1: "Evaluating evidence & credibility", mod8_2: "Charge, Elements & Evidence Matrix", mod8_3: "Preparing DI Report", mod8_4: "AI-Assisted Review + Human Verification",
+                bio_title: "Trainer Profile",
+                bio_c1: "Neuro Synergy NLP Master Trainer (GAANS, NZ)", bio_c2: "Neuro-Semantics & NLP Trainer (ISNS, USA)", bio_c3: "Strategic & Performance Coach", bio_c4: "HR Consultant | Learning Technologist", bio_badge: "HRD Corp Accredited Trainer",
+                bio_p1: "Started his career in the Ministry of Home Affairs Malaysia and subsequently the Malaysian Highway Authority. After 3 years in the Malaysian Government service, he joined Projek Lebuhraya Utara-Selatan Berhad (PLUS), the largest highway operator in Malaysia. Experienced working as an Operations Executive at one of the busiest highways in Malaysia which has over 200 employees and 30 Supervisors in a 24-hour operation for almost 6 years.",
+                bio_p2: "For the last five years, he worked in the Human Resources Department as a Unit Head handling various functions such as Employee Training, Discipline, Welfare, Occupational Safety & Health, and was directly involved in organizational development. He also held the position of Group Administration and Human Resources Manager at Grand Saga Sdn Bhd.",
+                bio_p3: "Currently, he has over 26 years of experience conducting training and consulting for various industries in Malaysia in the fields of Training, HR Management, Leadership, Motivation, Customer Service, Entrepreneurship, Retirement, and Office Administration.",
+                bio_p4: "In the field of Neuro-Semantics and NLP, Mohd Fauzi Nordin is a Certified Neuro-Semantics & NLP Trainer (ISNS, USA), Certified NLP Trainer (NFNLP, USA), Certified NLP Master Practitioner (NFNLP-USA), Certified NLP Basic Practitioner (NFNLP-USA), Certified Basic Neuro-Semantics (ISNS – USA), Certified Meta Master Practitioner (ISNS, USA).",
+                bio_p5: "In Coaching, Mohd Fauzi Nordin is an Associate Certified Meta-Coach (ACMC) from ISNS, USA, Certified Performance Coach (OUM / ICF), Certified NLP Coach (ABNLP, USA), Certified Neurolinguistic Coach (NFLP,USA) and Certified Sports and Performance Coach (NFNLP, USA).",
+                bio_p6: "In linguistics, he is a Certified Language and Behavioral Profile (LAB) Practitioner (SS,CAN), Certified Neurolinguistic Communication Consultant (NFNLP,USA) and Certified Neurolinguistic Hypnotherapy (NFNLP, USA).",
+                bio_p7: "In the field of training, he is a certified trainer (Certification in Training) endorsed by PSMB. Holds Certification in Training Evaluation (CITE) from PSMB and Certificate IV in Training and Assessment, Australia.",
+                bio_p8: "Mohd Fauzi Nordin holds a Master in Business Administration (MBA), Bachelor In Business Administration (BBA), Diploma in Personnel Management, and Diploma in Public Administration.",
+                info_title: "Program Information", info_date_title: "Date & Time", info_date_val: "28 & 29 December", info_venue_title: "Venue", info_venue_val: "Tanjong Vista Hotel", info_fee_title: "Course Fee", info_fee_pax: "/ pax", info_fee_inc: "(Includes morning tea, lunch, afternoon tea, certificate of attendance, and course notes)",
+                form_title: "Course Registration Form", form_subtitle: "Conducting Domestic Inquiry With A.I",
+                form_sec1: "Registration Made By", lbl_name: "Full Name", lbl_pos: "Position", lbl_company: "Company Name", lbl_phone: "Phone Number", lbl_email: "Email Address", lbl_address: "Company Address",
+                form_sec2: "Participant Details", form_p1: "Participant 1", lbl_ic: "ID Card / Passport No.", lbl_pos_phone: "Position / Phone No.",
+                form_note: "Please duplicate this form if there are more than 3 participants or email the details to <strong class='text-corporate-navy font-bold'>fauzinordin@hrconsultant.my</strong>. Registration confirmation will be emailed to the company representative.",
+                btn_submit: "Submit Registration",
+                footer: "&copy; 2026 Professional Training Program. Eligible for <strong class='text-slate-300'>HRD Corp</strong> claims. <br class='md:hidden'/> All rights reserved.",
+                contact_title: "Contact Us", contact_email_lbl: "Email: ", contact_web_lbl: "Website: "
+            },
+            zh: {
+                lang_label: "语言 / Language:",
+                btn_register_now: "立即注册",
+                btn_download_pdf: "下载 PDF 手册",
+                msg_pdf_downloaded: "PDF 手册已附上。",
+                badge_hrd: "100% HRD Corp 可索赔", badge_ai: "AI 辅助实践", badge_mod: "8个完整模块",
+                hero_title: "AI 辅助进行内部调查 <br class='hidden md:block'/>(DOMESTIC INQUIRY)",
+                hero_subtitle: "在AI的辅助下，公平、系统地管理内部调查。",
+                rat_title: "课程理念",
+                rat_p1: "处理员工的不当行为需要一个系统、公平、透明且以证据为基础的流程。在初步调查、起草指控、管理证据、处理证人或记录程序中的错误都可能损害纪律处分程序的质量。",
+                rat_p2: "<strong class='text-corporate-navy'>人工智能（AI）</strong> 的发展为人力资源和劳资关系从业者提供了提高工作效率的机会，例如构建案件案情、识别信息差距、协助起草指控、准备证人问题、安排时间表、分析文件以及协助准备报告草案。",
+                rat_p3: "然而，AI不应取代人类的判断。它的使用需要考虑到保密性、信息准确性、偏见和人工核实。本课程结合了内部调查的原则和实践，并在从案件早期阶段到调查结果的准备过程中，负责任地使用AI。",
+                obj_title: "课程目标",
+                obj_desc: "本课程旨在使参与者能够专业地理解和处理内部调查，并使用AI作为支持工具以提高效率、分析结构和文档质量，<span class='font-bold text-white border-b border-corporate-gold pb-0.5'>同时不将纪律决定权交给AI。</span>",
+                hasil_title: "学习成果", h_subtitle: "在课程结束时，参与者将能够：",
+                h1: "解释内部调查的概念、目的和基本原则，包括正当调查、自然公正和程序公平。",
+                h2: "在内部调查之前应用准备流程，包括初步调查、事实和证据收集、要求解释信以及在<strong class='text-corporate-navy'>适当的AI协助下</strong>进行指控准备。",
+                h3: "区分主席、小组成员、呈示官和记录官在确保公平和中立程序中的角色、责任和权力限制。",
+                h4: "系统地执行内部调查的开场程序，包括核实出席情况、宣读指控以及记录员工的答辩。",
+                h5: "当员工认罪时，通过确保认罪清晰且自愿，并适当考虑减轻处罚的因素，来处理内部调查程序。",
+                h6: "当员工不认罪时，通过案件陈述、主问、盘问和复问来进行和分析程序，包括<strong class='text-corporate-navy'>使用AI来协助制定问题和映射证据。</strong>",
+                h7: "评估与员工缺席相关的情况和信息，并按照公平、系统的程序进行缺席审判程序。",
+                h8: "评估提交的证据和证词，并在<strong class='text-corporate-navy'>AI的协助和人工核实</strong>下，生成结构化的内部调查结果和报告。",
+                who_title: "谁应该参加",
+                who_subtitle: "本课程专为以下人员设计：",
+                who_1: "人力资源经理和主管",
+                who_2: "劳资关系 (IR) 专员",
+                who_3: "部门主管 / 分行经理",
+                who_4: "法律与行政主管",
+                met_title: "课程方法",
+                m1: "辅导员讲解", m2: "案例分析", m3: "小组讨论", m4: "AI 提示练习", m5: "文件分析", m6: "角色扮演", m7: "模拟内部调查", m8: "AI辅助案件分析",
+                mod_subtitle: "项目结构", mod_title: "课程内容",
+                mod1_title: "内部调查基础 (FUNDAMENTALS OF DI)", mod1_1: "内部调查的定义与目的", mod1_2: "不当行为与纪律管理", mod1_3: "正当调查、自然公正与程序公平",
+                mod2_title: "内部调查之前 (BEFORE THE DI)", mod2_1: "投诉、事实与证据", mod2_2: "要求解释信 (Show Cause Letter)", mod2_3: "起草指控", mod2_4: "AI辅助案件准备",
+                mod3_title: "内部调查团队 (THE DI TEAM)", mod3_1: "主席与小组成员的角色", mod3_2: "呈示官与记录官", mod3_3: "内部调查中的AI治理",
+                mod4_title: "开启内部调查 (OPENING THE DI)", mod4_1: "房间与文件准备", mod4_2: "身份与指控核实", mod4_3: "记录答辩 (Recording the Plea)", mod4_4: "AI辅助内部调查准备",
+                mod5_title: "员工认罪 (EMPLOYEE PLEADS GUILTY)", mod5_1: "确保理解指控", mod5_2: "清晰且自愿的认罪", mod5_3: "减轻处罚因素", mod5_4: "AI辅助文档记录",
+                mod6_title: "员工不认罪 (EMPLOYEE PLEADS NOT GUILTY)", mod6_1: "呈现公司案件", mod6_2: "主问与盘问 (Cross-Examination)", mod6_3: "复问 (Re-Examination)", mod6_4: "AI问题开发与证据映射",
+                mod7_title: "缺席内部调查 (EX-PARTE DI)", mod7_1: "缺席内部调查的含义", mod7_2: "通知与送达证明", mod7_3: "评估缺席原因", mod7_4: "AI辅助缺席清单与差距分析",
+                mod8_title: "调查结果、报告与AI审查 (FINDINGS & REPORT)", mod8_1: "评估证据与可信度", mod8_2: "指控、要素与证据矩阵", mod8_3: "准备内部调查报告", mod8_4: "AI辅助审查 + 人工核实",
+                bio_title: "讲师简介",
+                bio_c1: "Neuro Synergy NLP 首席培训师 (GAANS, NZ)", bio_c2: "Neuro-Semantics & NLP 培训师 (ISNS, USA)", bio_c3: "战略与绩效教练", bio_c4: "人力资源顾问 | 学习技术专家", bio_badge: "HRD Corp 认证培训师",
+                bio_p1: "在他的职业生涯中，他曾在马来西亚内政部和马来西亚大道局任职。在政府服务3年后，他加入了马来西亚最大的高速公路运营商——南北大道公司（PLUS）。作为运营主管，他在马来西亚最繁忙的高速公路之一工作了近6年，管理24小时运营的200多名员工和30名主管。",
+                bio_p2: "在过去五年中，他在人力资源部担任单位主管，处理员工培训、纪律、福利、职业安全与健康等职能，并直接参与组织发展计划。他还曾担任 Grand Saga Sdn Bhd 的集团行政和人力资源经理。",
+                bio_p3: "目前，他拥有超过26年的经验，在培训、人力资源管理、领导力、动机、客户服务、创业、退休和办公室行政等领域为马来西亚各行业提供培训和咨询。",
+                bio_p4: "在神经语义学和NLP领域，Mohd Fauzi Nordin 是一名认证培训师和高级实践者（获 ISNS 和 NFNLP 认证）。",
+                bio_p5: "在教练领域，他是 ISNS 的副认证元教练（ACMC），并拥有多项国际教练联合会（ICF）、ABNLP 和 NFNLP 的认证教练资格。",
+                bio_p6: "在语言学方面，他是认证语言与行为档案（LAB）实践者，以及神经语言沟通顾问。",
+                bio_p7: "在培训领域，他是获 PSMB 认可的认证培训师，拥有 PSMB 的培训评估认证（CITE）以及澳大利亚的四级培训与评估证书。",
+                bio_p8: "Mohd Fauzi Nordin 拥有工商管理硕士学位（MBA）、工商管理学士学位（BBA）、人事管理文凭和公共行政文凭。",
+                info_title: "项目信息", info_date_title: "日期与时间", info_date_val: "12月 28 & 29日", info_venue_title: "地点", info_venue_val: "Tanjong Vista Hotel", info_fee_title: "课程费用", info_fee_pax: "/ 人", info_fee_inc: "(包含早茶、午餐、下午茶、出席证书和课程讲义)",
+                form_title: "课程报名表", form_subtitle: "AI辅助进行内部调查",
+                form_sec1: "报名者信息", lbl_name: "全名", lbl_pos: "职位", lbl_company: "公司名称", lbl_phone: "电话号码", lbl_email: "电子邮件", lbl_address: "公司地址",
+                form_sec2: "参与者详情", form_p1: "参与者 1", lbl_ic: "身份证 / 护照号码", lbl_pos_phone: "职位 / 电话号码",
+                form_note: "如果参与者超过3人，请复制此表格或将详情发送至 <strong class='text-corporate-navy font-bold'>fauzinordin@hrconsultant.my</strong>。报名确认函将发送给公司代表。",
+                btn_submit: "提交报名",
+                footer: "&copy; 2026 专业培训计划。符合 <strong class='text-slate-300'>HRD Corp</strong> 索赔条件。保留所有权利。",
+                contact_title: "联系我们", contact_email_lbl: "电邮: ", contact_web_lbl: "网站: "
+            },
+            ta: {
+                lang_label: "மொழி / Language:",
+                btn_register_now: "இப்போதே பதிவு செய்க",
+                btn_download_pdf: "PDF சிற்றேட்டைப் பதிவிறக்குக",
+                msg_pdf_downloaded: "PDF சிற்றேடு இணைக்கப்பட்டுள்ளது.",
+                badge_hrd: "100% HRD Corp கோரக்கூடியது", badge_ai: "AI உதவியுடன் பயிற்சி", badge_mod: "8 முழுமையான தொகுதிகள்",
+                hero_title: "AI உடன் உள் விசாரணையை <br class='hidden md:block'/>நடத்துதல்",
+                hero_subtitle: "உள் விசாரணையை நியாயமாகவும், முறையாகவும் AI-இன் உதவியுடனும் கையாளுதல்.",
+                rat_title: "பாடத்திட்டத்தின் காரணம்",
+                rat_p1: "பணியாளரின் தவறான நடத்தையை கையாளுவதற்கு முறையான, நியாயமான, வெளிப்படையான மற்றும் சான்றுகள் அடிப்படையிலான செயல்முறை தேவை. ஆரம்ப விசாரணை, குற்றச்சாட்டுகளை உருவாக்குதல், சான்றுகளை நிர்வகித்தல் போன்றவற்றில் ஏற்படும் பிழைகள் ஒழுங்கு நடவடிக்கையின் தரத்தை பாதிக்கலாம்.",
+                rat_p2: "<strong class='text-corporate-navy'>செயற்கை நுண்ணறிவின் (AI)</strong> வளர்ச்சியானது HR மற்றும் தொழில்துறை உறவுகள் பயிற்சியாளர்களுக்கு வேலை திறனை மேம்படுத்துவதற்கான வாய்ப்புகளைத் திறக்கிறது.",
+                rat_p3: "எனினும், AI மனித தீர்ப்பை மாற்றக்கூடாது. ரகசியத்தன்மை, தகவல் துல்லியம், சார்புநிலை மற்றும் மனித சரிபார்ப்பு ஆகியவற்றை கருத்தில் கொள்ள வேண்டும். இந்த பாடத்திட்டம் உள் விசாரணையின் கொள்கைகளை AI-இன் பொறுப்பான பயன்பாட்டுடன் இணைக்கிறது.",
+                obj_title: "பாடத்திட்டத்தின் நோக்கங்கள்",
+                obj_desc: "இந்த பாடத்திட்டமானது பங்கேற்பாளர்கள் உள் விசாரணைகளை தொழில்முறையாக கையாளவும், செயல்திறன் மற்றும் ஆவணங்களின் தரத்தை மேம்படுத்த AI-ஐ ஒரு ஆதரவு கருவியாக பயன்படுத்தவும் உதவும், <span class='font-bold text-white border-b border-corporate-gold pb-0.5'>ஆனால் ஒழுங்கு முடிவுகளை AI-இடம் ஒப்படைக்காமல்.</span>",
+                hasil_title: "கற்றல் விளைவுகள்", h_subtitle: "இந்த பாடத்திட்டத்தின் முடிவில், பங்கேற்பாளர்கள் பின்வருவனவற்றை செய்ய முடியும்:",
+                h1: "உள் விசாரணையின் கருத்துக்கள், நோக்கம் மற்றும் அடிப்படை கொள்கைகளை விளக்குதல்.",
+                h2: "உள் விசாரணைக்கு முன்னரான தயாரிப்பு செயல்முறைகளை <strong class='text-corporate-navy'>பொருத்தமான AI உதவியுடன்</strong> பயன்படுத்துதல்.",
+                h3: "நியாயமான விசாரணையை உறுதி செய்வதில் தலைவர், குழு உறுப்பினர்கள் மற்றும் பிற அதிகாரிகளின் பொறுப்புகளை வேறுபடுத்துதல்.",
+                h4: "வருகை சரிபார்ப்பு மற்றும் குற்றச்சாட்டு வாசிப்பு உட்பட உள் விசாரணையின் தொடக்க நடைமுறைகளை முறையாக செயல்படுத்துதல்.",
+                h5: "ஒரு பணியாளர் குற்றத்தை ஒப்புக்கொள்ளும்போது, அந்த ஒப்புதல் தெளிவாகவும் சுயவிருப்பத்துடனும் இருப்பதை உறுதி செய்து விசாரணையை கையாளுதல்.",
+                h6: "ஒரு பணியாளர் குற்றத்தை ஒப்புக்கொள்ளாதபோது, <strong class='text-corporate-navy'>AI உதவியுடன் கேள்விகளை உருவாக்கி</strong> சான்றுகளை பகுப்பாய்வு செய்து விசாரணையை நடத்துதல்.",
+                h7: "பணியாளர் வராத சூழ்நிலைகளை மதிப்பீடு செய்து, நியாயமான நடைமுறைகளின்படி எக்ஸ்-பார்டே (ex-parte) விசாரணைகளை நடத்துதல்.",
+                h8: "வழங்கப்பட்ட சான்றுகளை மதிப்பீடு செய்து, <strong class='text-corporate-navy'>AI உதவி மற்றும் மனித சரிபார்ப்புடன்</strong> கட்டமைக்கப்பட்ட உள் விசாரணை அறிக்கைகளை உருவாக்குதல்.",
+                who_title: "யார் கலந்து கொள்ள வேண்டும்",
+                who_subtitle: "இந்த பயிற்சி இவர்களுக்காக வடிவமைக்கப்பட்டுள்ளது:",
+                who_1: "HR மேலாளர்கள் மற்றும் நிர்வாகிகள்",
+                who_2: "தொழில்துறை உறவுகள் (IR) அதிகாரிகள்",
+                who_3: "துறைத் தலைவர்கள் / கிளை மேலாளர்கள்",
+                who_4: "சட்ட மற்றும் நிர்வாக அதிகாரிகள்",
+                met_title: "பயிற்சி முறை",
+                m1: "பயிற்றுவிப்பாளர் விளக்கம்", m2: "வழக்கு ஆய்வு", m3: "குழு விவாதம்", m4: "AI தூண்டுதல் பயிற்சி", m5: "ஆவண பகுப்பாய்வு", m6: "பங்கு நாடகம்", m7: "மாதிரி உள் விசாரணை", m8: "AI-உதவி வழக்கு பகுப்பாய்வு",
+                mod_subtitle: "நிரல் அமைப்பு", mod_title: "பாடத்திட்டத்தின் உள்ளடக்கங்கள்",
+                mod1_title: "உள் விசாரணையின் அடிப்படைகள்", mod1_1: "DI-இன் வரையறை மற்றும் நோக்கம்", mod1_2: "தவறான நடத்தை மேலாண்மை", mod1_3: "இயற்கை நீதி மற்றும் நடைமுறை நியாயம்",
+                mod2_title: "உள் விசாரணைக்கு முன்", mod2_1: "புகார்கள், உண்மைகள் மற்றும் சான்றுகள்", mod2_2: "காரணம் காட்டும் கடிதம்", mod2_3: "குற்றச்சாட்டை உருவாக்குதல்", mod2_4: "AI-உதவியுடன் வழக்கு தயாரிப்பு",
+                mod3_title: "உள் விசாரணை குழு", mod3_1: "தலைவர் மற்றும் குழுவின் பங்கு", mod3_2: "வழங்கும் மற்றும் பதிவு செய்யும் அதிகாரி", mod3_3: "DI-இல் AI நிர்வாகம்",
+                mod4_title: "உள் விசாரணையைத் தொடங்குதல்", mod4_1: "அறை மற்றும் ஆவண தயாரிப்பு", mod4_2: "அடையாளம் மற்றும் குற்றச்சாட்டு சரிபார்ப்பு", mod4_3: "பதிலை பதிவு செய்தல்", mod4_4: "AI-உதவியுடன் DI தயாரிப்பு",
+                mod5_title: "பணியாளர் குற்றத்தை ஒப்புக்கொள்கிறார்", mod5_1: "குற்றச்சாட்டைப் புரிந்துகொள்வதை உறுதிசெய்தல்", mod5_2: "தெளிவான மற்றும் சுயவிருப்ப ஒப்புதல்", mod5_3: "தணிக்கும் காரணிகள்", mod5_4: "AI-உதவி ஆவணப்படுத்தல்",
+                mod6_title: "பணியாளர் குற்றத்தை மறுக்கிறார்", mod6_1: "நிறுவனத்தின் வழக்கை வழங்குதல்", mod6_2: "குறுக்கு விசாரணை", mod6_3: "மறு விசாரணை", mod6_4: "AI கேள்வி உருவாக்கம்",
+                mod7_title: "எக்ஸ்-பார்டே உள் விசாரணை (EX-PARTE)", mod7_1: "எக்ஸ்-பார்டே DI-இன் பொருள்", mod7_2: "அறிவிப்பு மற்றும் விநியோக சான்று", mod7_3: "வராமைக்கான காரணங்களை மதிப்பீடு செய்தல்", mod7_4: "AI-உதவி இடைவெளி பகுப்பாய்வு",
+                mod8_title: "கண்டுபிடிப்புகள், அறிக்கை & AI மதிப்பாய்வு", mod8_1: "சான்றுகளை மதிப்பீடு செய்தல்", mod8_2: "குற்றச்சாட்டு, கூறுகள் & சான்று அணி", mod8_3: "DI அறிக்கையை தயாரித்தல்", mod8_4: "AI-உதவி மதிப்பாய்வு + மனித சரிபார்ப்பு",
+                bio_title: "பயிற்றுவிப்பாளர் சுயவிவரம்",
+                bio_c1: "Neuro Synergy NLP முதன்மை பயிற்றுவிப்பாளர்", bio_c2: "Neuro-Semantics & NLP பயிற்றுவிப்பாளர்", bio_c3: "மூலோபாய மற்றும் செயல்திறன் பயிற்சியாளர்", bio_c4: "HR ஆலோசகர் | கற்றல் தொழில்நுட்பவியலாளர்", bio_badge: "HRD Corp அங்கீகரிக்கப்பட்ட பயிற்றுவிப்பாளர்",
+                bio_p1: "மலேசிய உள்நாட்டு விவகாரங்கள் அமைச்சகம் மற்றும் மலேசிய நெடுஞ்சாலை ஆணையத்தில் தனது வாழ்க்கையைத் தொடங்கினார். 3 வருட அரசாங்க சேவைக்குப் பிறகு, மலேசியாவின் மிகப்பெரிய நெடுஞ்சாலை ஆபரேட்டரான PLUS-இல் இணைந்தார்.",
+                bio_p2: "கடந்த ஐந்து ஆண்டுகளாக, அவர் மனித வளத் துறையில் ஒரு யூனிட் தலைவராக பணிபுரிந்தார், பணியாளர் பயிற்சி, ஒழுக்கம் மற்றும் பாதுகாப்பு போன்ற பல்வேறு செயல்பாடுகளை கையாண்டார்.",
+                bio_p3: "தற்போது, பயிற்சி, HR மேலாண்மை, தலைமைத்துவம் போன்ற துறைகளில் மலேசியாவில் உள்ள பல்வேறு தொழில்களுக்கு பயிற்சி மற்றும் ஆலோசனை வழங்குவதில் 26 ஆண்டுகளுக்கும் மேலான அனுபவம் கொண்டுள்ளார்.",
+                bio_p4: "நியூரோ-செமாண்டிக்ஸ் மற்றும் NLP துறையில், அவர் ஒரு சான்றளிக்கப்பட்ட பயிற்றுவிப்பாளர் (ISNS மற்றும் NFNLP சான்றிதழ் பெற்றவர்).",
+                bio_p5: "பயிற்சித் துறையில், அவர் ISNS, ICF மற்றும் பல சர்வதேச நிறுவனங்களின் சான்றிதழ் பெற்ற பயிற்சியாளர் ஆவார்.",
+                bio_p6: "மொழியியலில், அவர் சான்றளிக்கப்பட்ட LAB பயிற்சியாளர் மற்றும் நரம்பியல் மொழி தொடர்பு ஆலோசகர் ஆவார்.",
+                bio_p7: "பயிற்சித் துறையில், அவர் PSMB ஆல் சான்றளிக்கப்பட்ட பயிற்றுவிப்பாளர் மற்றும் ஆஸ்திரேலியாவின் சான்றிதழ் IV-ஐ கொண்டுள்ளார்.",
+                bio_p8: "Mohd Fauzi Nordin, MBA, BBA மற்றும் பணியாளர் மேலாண்மை மற்றும் பொது நிர்வாகத்தில் டிப்ளோமா பட்டங்களை பெற்றுள்ளார்.",
+                info_title: "நிகழ்ச்சி தகவல்", info_date_title: "தேதி மற்றும் நேரம்", info_date_val: "டிசம்பர் 28 & 29", info_venue_title: "இடம்", info_venue_val: "Tanjong Vista Hotel", info_fee_title: "பயிற்சி கட்டணம்", info_fee_pax: "/ நபர்", info_fee_inc: "(காலை தேநீர், மதிய உணவு, மாலை தேநீர், வருகை சான்றிதழ் மற்றும் பாட குறிப்புகள் அடங்கும்)",
+                form_title: "பாடநெறி பதிவு படிவம்", form_subtitle: "AI உடன் உள் விசாரணையை நடத்துதல்",
+                form_sec1: "பதிவு செய்பவர்", lbl_name: "முழு பெயர்", lbl_pos: "பதவி", lbl_company: "நிறுவனத்தின் பெயர்", lbl_phone: "தொலைபேசி எண்", lbl_email: "மின்னஞ்சல் முகவரி", lbl_address: "நிறுவனத்தின் முகவரி",
+                form_sec2: "பங்கேற்பாளர் விவரங்கள்", form_p1: "பங்கேற்பாளர் 1", lbl_ic: "அடையாள அட்டை எண்", lbl_pos_phone: "பதவி / தொலைபேசி எண்",
+                form_note: "3 பங்கேற்பாளர்களுக்கு மேல் இருந்தால் இந்த படிவத்தை நகலெடுக்கவும் அல்லது விவரங்களை <strong class='text-corporate-navy font-bold'>fauzinordin@hrconsultant.my</strong> என்ற மின்னஞ்சலுக்கு அனுப்பவும்.",
+                btn_submit: "பதிவை சமர்ப்பிக்கவும்",
+                footer: "&copy; 2026 தொழில்முறை பயிற்சி திட்டம். <strong class='text-slate-300'>HRD Corp</strong> கோரிக்கைகளுக்கு தகுதியானது. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+                contact_title: "எங்களை தொடர்பு கொள்ளவும்", contact_email_lbl: "மின்னஞ்சல்: ", contact_web_lbl: "இணையதளம்: "
+            }
+        };
+
+        function changeLanguage(lang) {
+            document.documentElement.lang = lang;
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+        }
+        
+        // Custom Modal Functions
+        function downloadPDF() {
+            const lang = document.documentElement.lang || 'ms';
+            const msg = translations[lang]['msg_pdf_downloaded'] || translations['ms']['msg_pdf_downloaded'];
+            showModal(msg);
+        }
+
+        function showModal(msg) {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            document.getElementById('modalMessage').innerText = msg;
+            modal.classList.remove('hidden');
+            // Give browser time to remove hidden before animating in
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            const content = document.getElementById('customModalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+
+    <script>
+        function handleRegistration(event) {
+            // Mencegah borang daripada membuat HTTP POST biasa (refresh page)
+            event.preventDefault();
+
+            // Mendapatkan maklumat Pendaftar
+            const regName = document.getElementById('regName').value;
+            const regPos = document.getElementById('regPos').value;
+            const regCompany = document.getElementById('regCompany').value;
+            const regPhone = document.getElementById('regPhone').value;
+            const regEmail = document.getElementById('regEmail').value;
+            const regAddress = document.getElementById('regAddress').value;
+
+            // Mendapatkan maklumat Peserta 1
+            const p1Name = document.getElementById('p1Name').value;
+            const p1Ic = document.getElementById('p1Ic').value;
+            const p1PosPhone = document.getElementById('p1PosPhone').value;
+            const p1Email = document.getElementById('p1Email').value;
+
+            // Membina blok teks maklumat pendaftaran
+            const message = `Pendaftaran Kursus Siasatan Dalaman Dengan A.I\n\n` +
+                            `[ MAKLUMAT PENDAFTAR ]\n` +
+                            `Nama: ${regName}\n` +
+                            `Jawatan: ${regPos}\n` +
+                            `Syarikat: ${regCompany}\n` +
+                            `No. Telefon: ${regPhone}\n` +
+                            `E-mel: ${regEmail}\n` +
+                            `Alamat: ${regAddress}\n\n` +
+                            `[ MAKLUMAT PESERTA 1 ]\n` +
+                            `Nama: ${p1Name}\n` +
+                            `No. MyKad / Pasport: ${p1Ic}\n` +
+                            `Jawatan / No. Tel: ${p1PosPhone}\n` +
+                            `E-mel: ${p1Email}`;
+
+            // 'Encode' mesej untuk URL (Email & WhatsApp)
+            const encodedMessage = encodeURIComponent(message);
+            const encodedSubject = encodeURIComponent('Pendaftaran Kursus Siasatan Dalaman');
+
+            // Hantar Email menerusi pautan mailto:
+            const mailtoLink = `mailto:fauzinordin@hrconsultant.my?subject=${encodedSubject}&body=${encodedMessage}`;
+            window.location.href = mailtoLink;
+
+            // Buka WhatsApp Web/App di Tab baru selepas sela masa singkat
+            const waLink = `https://wa.me/60193970002?text=${encodedMessage}`;
+            setTimeout(() => {
+                window.open(waLink, '_blank');
+            }, 500); // Sela masa sedikit supaya browser sempat memproses pautan mailto
+        }
+    </script>
+</body>
+</html>
