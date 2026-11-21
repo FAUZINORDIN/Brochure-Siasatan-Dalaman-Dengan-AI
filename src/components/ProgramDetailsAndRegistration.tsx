@@ -177,8 +177,8 @@ export function ProgramDetailsAndRegistration({
             <div className="lg:col-span-5 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 relative min-h-[260px]">
               {!venueImgError ? (
                 <img
-                  src="/src/assets/images/venue_terengganu_hotel_1795230590520.jpg"
-                  alt="Tanjong Vista Hotel, Kuala Terengganu"
+                  src="/assets/tanjong-vista/slider1.webp"
+                  alt="Hotel Tanjong Vista, Kuala Terengganu"
                   referrerPolicy="no-referrer"
                   onError={() => setVenueImgError(true)}
                   className="w-full h-full object-cover"

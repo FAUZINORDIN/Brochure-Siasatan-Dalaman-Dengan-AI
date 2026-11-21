@@ -25,10 +25,10 @@ export function TrainerProfile({ trainer }: TrainerProfileProps) {
           {/* Left Identity & Portrait Column */}
           <div className="lg:col-span-4 bg-slate-950 text-white p-8 flex flex-col justify-between">
             <div>
-              <div className="aspect-[3/4] w-full max-w-[260px] mx-auto lg:max-w-none rounded-xl overflow-hidden border border-slate-800 bg-slate-900 mb-6">
+              <div className="aspect-[3/4] w-full max-w-[260px] mx-auto lg:max-w-none rounded-xl overflow-hidden border border-slate-700 bg-white mb-6">
                 {!imgError ? (
                   <img
-                    src="/src/assets/images/trainer_portrait_fauzi_1795230589427.jpg"
+                    src="/assets/aistudio/DSC_4001_c95c151c.JPG"
                     alt={trainer.name}
                     referrerPolicy="no-referrer"
                     onError={() => setImgError(true)}
